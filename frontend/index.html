@@ -66,9 +66,9 @@
   </main>
 
 <script>
-const API_BASE = "https://scholarship-scorecard.onrender.com"
+const API_BASE = "https://scholarship-scorecard1.onrender.com"
 let CONFIG = null;
-  <script>
+  
 
 async function loadConfig() {
   const res = await fetch(API_BASE + "/api/config");
@@ -78,6 +78,8 @@ async function loadConfig() {
   document.getElementById("subtitle").textContent = CONFIG.ui?.subtitle || "";
   renderFactors(CONFIG.factors || []);
 }
+  document.addEventListener("DOMContentLoaded", loadConfig);
+
 
 function renderFactors(factors) {
   const wrap = document.getElementById("factors");
