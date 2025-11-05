@@ -1,0 +1,141 @@
+{
+  "version": "1.2",
+  "allowed_origins": [
+    "*"
+  ],
+  "cap": 0.1,
+  "factors": [
+    {
+      "key": "Income",
+      "label": "Household Income",
+      "type": "select",
+      "options": [
+        "\u2264100% FPL",
+        "101\u2013150% FPL",
+        "151\u2013185% FPL",
+        ">185% FPL"
+      ],
+      "map": {
+        "\u2264100% FPL": 4.0,
+        "101\u2013150% FPL": 3.0,
+        "151\u2013185% FPL": 2.0,
+        ">185% FPL": 0.0
+      },
+      "weight": 0.25
+    },
+    {
+      "key": "Employment",
+      "label": "Caregiver Employment / School",
+      "type": "select",
+      "options": [
+        "Lost job",
+        "Part-time/variable hours",
+        "Full-time"
+      ],
+      "map": {
+        "Lost job": 3.0,
+        "Part-time/variable hours": 2.0,
+        "Full-time": 0.0
+      },
+      "weight": 0.15
+    },
+    {
+      "key": "Safety",
+      "label": "Family Safety / Stability",
+      "type": "select",
+      "options": [
+        "DCFS case / foster / kinship",
+        "Homeless / shelter",
+        "Doubled-up housing",
+        "Stable housing"
+      ],
+      "map": {
+        "DCFS case / foster / kinship": 5.0,
+        "Homeless / shelter": 4.0,
+        "Doubled-up housing": 3.0,
+        "Stable housing": 0.0
+      },
+      "weight": 0.25
+    },
+    {
+      "key": "ChildDev",
+      "label": "Child Development / Medical",
+      "type": "select",
+      "options": [
+        "IEP/IFSP or medical fragility",
+        "Screening concerns",
+        "None"
+      ],
+      "map": {
+        "IEP/IFSP or medical fragility": 4.0,
+        "Screening concerns": 2.0,
+        "None": 0.0
+      },
+      "weight": 0.2
+    },
+    {
+      "key": "ParentCap",
+      "label": "Caregiver Capacity",
+      "type": "select",
+      "options": [
+        "Teen parent",
+        "Substance recovery",
+        "Incarceration history",
+        "illness",
+        "None"
+      ],
+      "map": {
+        "Teen parent": 3.0,
+        "Substance recovery": 3.0,
+        "Incarceration history": 2.0,
+        "illness": 2.0,
+        "None": 0.0
+      },
+      "weight": 0.1
+    },
+    {
+      "key": "LocalPri",
+      "label": "Local Priority",
+      "type": "select",
+      "options": [
+        "Sibling already enrolled",
+        "Rural transport barrier",
+        "None"
+      ],
+      "map": {
+        "Sibling already enrolled": 1.0,
+        "Rural transport barrier": 1.0,
+        "None": 0.0
+      },
+      "weight": 0.05
+    }
+  ],
+  "rules": [
+    {
+      "code": "CF1",
+      "desc": "Income \u00d7 Safety hardship",
+      "trigger": "raw.get('Income') in ['\u2264100% FPL','101\u2013150% FPL'] and raw.get('Safety') in ['DCFS case / foster / kinship','Homeless / shelter']",
+      "bonus": 0.06
+    },
+    {
+      "code": "CF2",
+      "desc": "IEP \u00d7 Teen parent",
+      "trigger": "raw.get('ChildDev') == 'IEP/IFSP or medical fragility' and raw.get('ParentCap') == 'Teen parent'",
+      "bonus": 0.02
+    },
+    {
+      "code": "CF3",
+      "desc": "Recovery \u00d7 Housing instability",
+      "trigger": "raw.get('ParentCap') == 'Substance recovery' and raw.get('Safety') in ['Doubled-up housing','Homeless / shelter']",
+      "bonus": 0.02
+    }
+  ],
+  "decision_thresholds": {
+    "decline_max": 60,
+    "partial_max": 80
+  },
+  "ui": {
+    "title": "Scholarship Application",
+    "subtitle": "Select criteria. Server decides."
+  }
+}
